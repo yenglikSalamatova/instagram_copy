@@ -1,4 +1,5 @@
 const express = require("express");
+require("dotenv").config();
 const passport = require("passport");
 const jwtStrategy = require("./passport/jwtStrategy");
 
@@ -10,11 +11,7 @@ const clearTables = require("./utils/clearTables");
 
 const app = express();
 
-const dotenv = require("dotenv");
-
 const authRoutes = require("./routes/auth");
-
-dotenv.config({ path: "./config.env" });
 
 // Parsers
 app.use(express.json());

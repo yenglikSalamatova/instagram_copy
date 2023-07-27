@@ -1,5 +1,6 @@
 // controllers/auth.js
 const bcrypt = require("bcrypt");
+const { Op } = require("sequelize");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const VerificationCode = require("../models/VerificationCode");
@@ -99,7 +100,49 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-  // Код для аутентификации пользователя
+  const { email, username, phone, password } = req.body;
+
+  if (!email && !username && !phone) {
+    return res
+      .status(400)
+      .json({ error: "Either email, phone, or username must be provided." });
+  }
+  if (!password) {
+    return res.status(400).json({ error: "Password must be provided." });
+  }
+  try {
+    const identifier = email || username || phone;
+
+    const user = await User.findOne({
+      where: {
+        [Op.or]: [
+          email ? { email } : null,
+          username ? { username } : null,
+          phone ? { phone } : null,
+        ],
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Invalid password" });
+    }
+    if (!user.isVerified) {
+      return res.status(404).json({ error: "Please verify your account" });
+    }
+
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    res.status(200).json({ token });
+  } catch (error) {
+    console.error("Error logging in:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
 
 const verify = async (req, res) => {
