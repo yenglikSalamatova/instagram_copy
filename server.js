@@ -1,17 +1,11 @@
 const express = require("express");
 require("dotenv").config();
 const passport = require("passport");
-const jwtStrategy = require("./passport/jwtStrategy");
-
-const clearTables = require("./utils/clearTables");
-
-// Очистка базы данных
-// clearTables.clearVerificationCodesTable();
-// clearTables.clearUsersTable();
+const jwtStrategy = require("./server/passport/jwtStrategy");
 
 const app = express();
 
-const authRoutes = require("./routes/auth");
+const authRoutes = require("./server/routes/authRoutes");
 
 // Parsers
 app.use(express.json());

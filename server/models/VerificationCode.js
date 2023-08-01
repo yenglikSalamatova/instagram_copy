@@ -1,4 +1,3 @@
-// models/verificationCode.js
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
@@ -7,14 +6,14 @@ const VerificationCode = sequelize.define("VerificationCode", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  expiresAt: {
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  expiresIn: {
     type: DataTypes.DATE,
     allowNull: false,
   },
-});
-
-VerificationCode.belongsTo(VerificationCode, {
-  foreignKey: "userId",
 });
 
 module.exports = VerificationCode;

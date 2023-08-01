@@ -1,9 +1,15 @@
 const { Sequelize } = require("sequelize");
+const config = require("./config.json");
 
-const sequelize = new Sequelize("instagram_db_development", "admin", "root", {
-  host: "127.0.0.1",
-  dialect: "postgres",
-});
+const sequelize = new Sequelize(
+  config[process.env.NODE_ENV].database,
+  config[process.env.NODE_ENV].username,
+  config[process.env.NODE_ENV].password,
+  {
+    host: config[process.env.NODE_ENV].host,
+    dialect: config[process.env.NODE_ENV].dialect,
+  }
+);
 
 // Обработчик успешного подключения
 sequelize

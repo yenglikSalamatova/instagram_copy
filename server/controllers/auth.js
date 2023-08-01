@@ -1,8 +1,10 @@
 // controllers/auth.js
 const bcrypt = require("bcrypt");
 const { Op } = require("sequelize");
+const path = require("path");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+
 const VerificationCode = require("../models/VerificationCode");
 const sendVerificationCodeToEmail = require("../utils/email");
 const sendSms = require("../utils/sms");
@@ -25,17 +27,6 @@ const calculateExpirationTime = (minutes) => {
   return expirationDate;
 };
 
-const createNewUser = async (username, email, phone, password) => {
-  const hashedPassword = await bcrypt.hash(password, 10);
-  return User.create({
-    username,
-    email,
-    phone,
-    password: hashedPassword,
-    isVerified: false,
-  });
-};
-
 const createVerificationCode = async (userId) => {
   const code = generateVerificationCode(6);
   const expiresAt = calculateExpirationTime(10);
@@ -49,7 +40,7 @@ const createVerificationCode = async (userId) => {
 
 const register = async (req, res) => {
   try {
-    const { username, email, phone, password } = req.body;
+    const { username, email, full_name, phone, password } = req.body;
     const identifier = email ? "email" : "phone";
 
     if (!identifier) {
@@ -58,7 +49,16 @@ const register = async (req, res) => {
         .json({ error: "Either email or phone must be provided." });
     }
 
-    const user = await createNewUser(username, email, phone, password);
+    const user = await User.create({
+      username,
+      full_name,
+      email,
+      phone,
+      password: await bcrypt.hash(password, 10),
+      isVerified: false,
+      profileId: null,
+    });
+
     const code = await createVerificationCode(user.id);
 
     // Отправка кода через почту
@@ -179,6 +179,7 @@ const verify = async (req, res) => {
     ) {
       user.isVerified = true;
       await user.save();
+
       return res.status(200).json({ message: "Verification successful" });
     } else {
       return res
