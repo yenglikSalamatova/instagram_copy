@@ -13,10 +13,9 @@ module.exports = {
         allowNull: true,
       },
       mediaType: {
-        type: Sequelize.ENUM("photo", "video", "gallery"),
+        type: Sequelize.ENUM("photo", "video"),
         allowNull: false,
       },
-      mediaUrls: { type: Sequelize.ARRAY(Sequelize.STRING), allowNull: false },
       UserId: {
         type: Sequelize.INTEGER,
         allowNull: false,
