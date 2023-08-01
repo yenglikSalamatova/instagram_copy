@@ -8,10 +8,6 @@ const Post = sequelize.define("Post", {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  mediaType: {
-    type: DataTypes.ENUM("photo", "video"),
-    allowNull: false,
-  },
 });
 
 Post.belongsTo(User);

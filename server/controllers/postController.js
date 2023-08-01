@@ -1,25 +1,18 @@
 const Post = require("../models/Post");
 const Media = require("../models/Media");
-const mime = require("mime-types");
-const path = require("path");
-const { videoUpload, imageUpload } = require("../middleware/uploadMiddleware");
 
 const createPost = async (req, res) => {
   try {
-    const mediaType = req.files[0].mimetype.startsWith("image/")
-      ? "photo"
-      : "video";
     const newPost = await Post.create({
       caption: req.body.caption,
-      mediaType,
       UserId: req.user.id,
     });
 
     // Создаем связанные медиа-файлы
     const mediaPromises = req.files.map(async (file) => {
       return Media.create({
-        url: `/upload/${req.user.id}/media/${file.filename}`,
-        type: mediaType,
+        url: `/uploads/${req.user.id}/media/${file.filename}`,
+        type: file.mimetype.startsWith("image/") ? "photo" : "video",
         postId: newPost.id,
       });
     });
@@ -32,4 +25,68 @@ const createPost = async (req, res) => {
   }
 };
 
-module.exports = { createPost };
+const getMyPosts = async (req, res) => {
+  try {
+    const posts = await Post.findAll({
+      where: {
+        UserId: req.user.id,
+      },
+      include: [{ model: Media, as: "media" }],
+    });
+    res.status(201).json(posts);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Error when find all posts" });
+  }
+};
+
+const getAllPosts = async (req, res) => {
+  try {
+    const posts = await Post.findAll({
+      include: [{ model: Media, as: "media" }],
+    });
+    res.status(201).json(posts);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Error when find all posts" });
+  }
+};
+
+const getPost = async (req, res) => {
+  try {
+    const posts = await Post.findAll({
+      where: {
+        id: req.params.id,
+      },
+      include: [{ model: Media, as: "media" }],
+    });
+    res.status(201).json(posts);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Error when find all posts" });
+  }
+};
+
+const deletePost = async (req, res) => {
+  try {
+    const post = await Post.findOne({
+      where: {
+        id: req.params.id,
+        UserId: req.user.id,
+      },
+    });
+    if (!post) {
+      return res
+        .status(404)
+        .json({ message: "Пост не найден или у вас нет прав на его удаление" });
+    }
+    // Удалить пост
+    await post.destroy();
+    res.status(204).end();
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Error when delete post" });
+  }
+};
+
+module.exports = { createPost, getMyPosts, getAllPosts, getPost, deletePost };

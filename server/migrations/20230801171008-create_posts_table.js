@@ -12,10 +12,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      mediaType: {
-        type: Sequelize.ENUM("photo", "video"),
-        allowNull: false,
-      },
       UserId: {
         type: Sequelize.INTEGER,
         allowNull: false,
