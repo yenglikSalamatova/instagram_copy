@@ -1,42 +1,16 @@
-// controllers/auth.js
 const bcrypt = require("bcrypt");
 const { Op } = require("sequelize");
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
-const VerificationCode = require("../models/VerificationCode");
-const sendVerificationCodeToEmail = require("../utils/email");
+const {
+  VerificationCode,
+  createVerificationCode,
+} = require("../models/VerificationCode");
+
+const sendEmail = require("../utils/email");
 const sendSms = require("../utils/sms");
-
-// Вспомогательная функция для генерации случайного кода подтверждения
-const generateVerificationCode = (length) => {
-  const characters = "0123456789";
-  let code = "";
-  for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length);
-    code += characters[randomIndex];
-  }
-  return code;
-};
-
-// Вспомогательная функция для вычисления срока действия кода подтверждения
-const calculateExpirationTime = (minutes) => {
-  const expirationDate = new Date();
-  expirationDate.setMinutes(expirationDate.getMinutes() + minutes);
-  return expirationDate;
-};
-
-const createVerificationCode = async (userId) => {
-  const code = generateVerificationCode(6);
-  const expiresAt = calculateExpirationTime(10);
-  const verificationCode = await VerificationCode.create({
-    code,
-    expiresAt,
-    userId,
-  });
-  return verificationCode.code;
-};
 
 const register = async (req, res) => {
   try {
@@ -47,6 +21,20 @@ const register = async (req, res) => {
       return res
         .status(400)
         .json({ error: "Either email or phone must be provided." });
+    }
+    // Проверяем, существует ли пользователь с таким же именем пользователя или email
+    const existingUser = await User.findOne({
+      where: {
+        [Op.or]: [
+          email ? { email } : null,
+          username ? { username } : null,
+          phone ? { phone } : null,
+        ],
+      },
+    });
+
+    if (existingUser) {
+      return res.status(400).json({ error: "User already exists." });
     }
 
     const user = await User.create({
@@ -63,7 +51,7 @@ const register = async (req, res) => {
 
     // Отправка кода через почту
     if (email) {
-      const sended = await sendVerificationCodeToEmail(email, code);
+      const sended = await sendEmail(email, code);
       if (sended) {
         // Если письмо успешно отправлено, можно отправить статус успешно
         return res
@@ -77,6 +65,7 @@ const register = async (req, res) => {
       }
     }
 
+    // Логика для отправки смс
     if (phone) {
       const sended = await sendSms(phone, `Your verification code is ${code}`);
       if (sended) {
@@ -90,9 +79,6 @@ const register = async (req, res) => {
           .json({ error: "Failed to send verification code." });
       }
     }
-
-    // Логика для отправки смс
-    // ...
   } catch (error) {
     console.error("Error registering user:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -170,12 +156,14 @@ const verify = async (req, res) => {
       where: { userId: user.id },
     });
 
+    console.log(verificationCode.code, code);
+
     if (!verificationCode) {
       return res.status(404).json({ error: "Verification code not found" });
     }
     if (
       verificationCode.code === code &&
-      new Date(verificationCode.expiresAt) >= new Date()
+      new Date(verificationCode.expiresIn) >= new Date()
     ) {
       user.isVerified = true;
       await user.save();
@@ -223,7 +211,7 @@ const resendVerificationCode = async (req, res) => {
       return res.status(400).json({ error: "Account is already verified" });
     }
 
-    if (new Date(verificationCode.expiresAt) >= new Date()) {
+    if (new Date(verificationCode.expiresIn) >= new Date()) {
       return res.status(400).json({
         error: "Verification code is still valid, please try again later",
       });
@@ -232,10 +220,7 @@ const resendVerificationCode = async (req, res) => {
     const newVerificationCode = await createVerificationCode(user.id);
 
     if (email) {
-      const sended = await sendVerificationCodeToEmail(
-        email,
-        newVerificationCode
-      );
+      const sended = await sendEmail(email, newVerificationCode);
       if (!sended) {
         return res
           .status(500)
