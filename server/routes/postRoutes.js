@@ -10,5 +10,6 @@ router.get("/", authenticateToken, postController.getAllPosts);
 router.get("/my", authenticateToken, postController.getMyPosts);
 router.get("/:id", authenticateToken, postController.getPost);
 router.delete("/:id", authenticateToken, postController.deletePost);
+router.patch("/:id", authenticateToken, mediaUpload, postController.editPost);
 
 module.exports = router;

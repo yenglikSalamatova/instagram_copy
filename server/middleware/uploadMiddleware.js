@@ -41,6 +41,13 @@ const avatarStorage = multer.diskStorage({
       `${req.user.id}`,
       "avatars"
     );
+
+    // Проверяем, существует ли папка
+    if (!fs.existsSync(avatarDirectory)) {
+      // Если папка не существует, создаем ее
+      fs.mkdirSync(avatarDirectory, { recursive: true });
+    }
+
     cb(null, avatarDirectory);
   },
   filename: function (req, file, cb) {
