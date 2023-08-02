@@ -10,7 +10,4 @@ const Post = sequelize.define("Post", {
   },
 });
 
-Post.belongsTo(User);
-Post.hasMany(Media, { as: "media", foreignKey: "postId" });
-
 module.exports = Post;
