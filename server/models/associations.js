@@ -4,6 +4,7 @@ const User = require("./User");
 const Story = require("./Story");
 const Comment = require("./Comment");
 const Post = require("./Comment");
+const sequelize = require("../config/database");
 
 module.exports = (sequelize) => {
   User.hasMany(Story, {
@@ -17,8 +18,18 @@ module.exports = (sequelize) => {
   });
 
   // Комментарии
-  Comment.belongsTo(User);
-  Comment.belongsTo(Post);
-  User.hasMany(Comment);
-  Post.hasMany(Comment);
+  Comment.belongsTo(User, {
+    foreignKey: "UserId",
+  });
+  Comment.belongsTo(Post, {
+    foreignKey: "PostId",
+  });
+  User.hasMany(Comment, {
+    foreignKey: "UserId",
+  });
+  Post.hasMany(Comment, {
+    foreignKey: "PostId",
+  });
+
+  //Подписчики
 };

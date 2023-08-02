@@ -1,3 +1,5 @@
+// migrations/YYYYMMDDHHMMSS-create-comments.js
+
 "use strict";
 
 module.exports = {
@@ -10,7 +12,7 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       text: {
-        type: Sequelize.TEXT,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       UserId: {

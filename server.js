@@ -2,7 +2,6 @@ const express = require("express");
 require("dotenv").config();
 const passport = require("passport");
 const jwtStrategy = require("./server/passport/jwtStrategy");
-const { Sequelize } = require("sequelize");
 const sequelize = require("./server/config/database");
 const app = express();
 
