@@ -3,6 +3,7 @@
 const User = require("./User");
 const Story = require("./Story");
 const Comment = require("./Comment");
+const Media = require("./Media");
 const Post = require("./Comment");
 const Subscription = require("./Subscription");
 const sequelize = require("../config/database");

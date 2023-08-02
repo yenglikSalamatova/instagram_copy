@@ -10,6 +10,7 @@ const postRoutes = require("./server/routes/postRoutes");
 const userRoutes = require("./server/routes/userRoutes");
 const storiesRoutes = require("./server/routes/storiesRoutes");
 const commentRoutes = require("./server/routes/commentRoutes");
+const subscriptionRoutes = require("./server/routes/subscriptionRoutes");
 
 // Подключаем файл с определениями ассоциаций
 const associations = require("./server/models/associations");
@@ -27,6 +28,7 @@ app.use("/api/posts", postRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/stories", storiesRoutes);
 app.use("/api/comments", commentRoutes);
+app.use("/api/subscriptions", subscriptionRoutes);
 
 app.listen(3000, () => {
   console.log("Server is listening on port 3000");
