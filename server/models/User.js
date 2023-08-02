@@ -1,6 +1,8 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
+const Story = require("../models/Story");
+
 const User = sequelize.define("User", {
   username: {
     type: DataTypes.STRING,
@@ -36,11 +38,6 @@ const User = sequelize.define("User", {
     type: DataTypes.BOOLEAN,
     allowNull: false,
   },
-});
-
-User.hasMany(Story, {
-  foreignKey: "userId",
-  as: "stories",
 });
 
 module.exports = User;

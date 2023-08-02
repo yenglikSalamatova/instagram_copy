@@ -1,6 +1,6 @@
 // models/Story.js
 const { DataTypes } = require("sequelize");
-const sequelize = require("../db/connection");
+const sequelize = require("../config/database");
 
 const User = require("../models/User");
 
@@ -13,11 +13,10 @@ const Story = sequelize.define("Story", {
     type: DataTypes.TEXT,
     allowNull: false,
   },
-});
-
-Story.belongsTo(User, {
-  foreignKey: "userId",
-  as: "user",
+  expiresAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
 });
 
 module.exports = Story;

@@ -80,6 +80,25 @@ const mediaUpload = multer({
   },
 }).array("media", 10);
 
+const storyUpload = multer({
+  storage: mediaStorage,
+  limits: {
+    fileSize: 1024 * 1024 * 20, // Максимальный размер файла видео (в данном примере - 100 МБ)
+    files: 1, // Ограничиваем количество загружаемых файлов до 1
+  },
+  fileFilter: function (req, file, cb) {
+    // Проверяем тип файла видео
+    if (
+      file.mimetype.startsWith("video") ||
+      file.mimetype.startsWith("image")
+    ) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only videos or photos are allowed"));
+    }
+  },
+}).single("content");
+
 // Определяем опции загрузки для аватаров
 const avatarUpload = multer({
   storage: avatarStorage,
@@ -96,4 +115,4 @@ const avatarUpload = multer({
   },
 }).single("avatar");
 
-module.exports = { mediaUpload, avatarUpload };
+module.exports = { mediaUpload, avatarUpload, storyUpload };

@@ -3,3 +3,5 @@ node_modules/
 
 # Игнорировать файлы с расширением .env
 *.env
+
+public/uploads
