@@ -2,6 +2,7 @@ const Story = require("../models/Story");
 const path = require("path");
 const fs = require("fs");
 const { Op } = require("sequelize");
+require("../models/associations");
 
 async function createStories(req, res) {
   try {
@@ -10,12 +11,12 @@ async function createStories(req, res) {
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 24);
     console.log(expiresAt);
-    const UserId = req.user.id;
-    console.log(UserId);
+    const userId = req.user.id;
+    console.log(userId);
     const story = await Story.create({
       title,
       content,
-      UserId,
+      userId,
       expiresAt,
     });
 
@@ -31,7 +32,7 @@ async function deleteStories(req, res) {
     const story = await Story.findOne({
       where: {
         id: req.params.id,
-        UserId: req.user.id,
+        userId: req.user.id,
       },
     });
     if (!story) {
@@ -51,12 +52,12 @@ async function deleteStories(req, res) {
   }
 }
 
-async function getStoryByUserId(req, res) {
+async function getStoryByuserId(req, res) {
   try {
     const currentDate = new Date();
     const stories = await Story.findAll({
       where: {
-        UserId: req.params.userId,
+        userId: req.params.userId,
         expiresAt: {
           [Op.gt]: currentDate, // Оператор ">" для сравнения с текущей датой
         },
@@ -74,4 +75,4 @@ async function getStoryByUserId(req, res) {
   }
 }
 
-module.exports = { createStories, deleteStories, getStoryByUserId };
+module.exports = { createStories, deleteStories, getStoryByuserId };

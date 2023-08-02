@@ -1,14 +1,21 @@
 const Post = require("../models/Post");
 const Media = require("../models/Media");
+const User = require("../models/User");
+require("../models/associations");
 const path = require("path");
 const fs = require("fs");
 
 const createPost = async (req, res) => {
   try {
+    console.log(req.user.id);
     const newPost = await Post.create({
       caption: req.body.caption,
-      UserId: req.user.id,
+      userId: req.user.id,
     });
+
+    if (req.files.length === 0) {
+      res.status(500).json({ error: "No files to upload" });
+    }
 
     // Создаем связанные медиа-файлы
     const mediaPromises = req.files.map(async (file) => {
@@ -19,7 +26,9 @@ const createPost = async (req, res) => {
       });
     });
 
-    await Promise.all(mediaPromises);
+    const media = await Promise.all(mediaPromises);
+    newPost.media = media;
+
     res.status(201).json(newPost);
   } catch (error) {
     console.log(error);
@@ -31,7 +40,7 @@ const getMyPosts = async (req, res) => {
   try {
     const posts = await Post.findAll({
       where: {
-        UserId: req.user.id,
+        userId: req.user.id,
       },
       include: [{ model: Media, as: "media" }],
     });
@@ -74,7 +83,7 @@ const deletePost = async (req, res) => {
     const post = await Post.findOne({
       where: {
         id: req.params.id,
-        UserId: req.user.id,
+        userId: req.user.id,
       },
       include: [
         {
@@ -111,7 +120,7 @@ const editPost = async (req, res) => {
     const post = await Post.findOne({
       where: {
         id: req.params.id,
-        UserId: req.user.id,
+        userId: req.user.id,
       },
       include: [
         {
@@ -154,6 +163,34 @@ const editPost = async (req, res) => {
   }
 };
 
+const getPostsByUsername = async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    // Find the user with the given username
+    const user = await User.findOne({ where: { username } });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Find all posts created by the user
+    const posts = await Post.findAll({
+      where: { userId: user.id },
+      include: [
+        {
+          model: Media,
+          as: "media",
+        },
+      ],
+    });
+
+    res.status(200).json({ posts });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Error when get posts by username" });
+  }
+};
+
 module.exports = {
   createPost,
   getMyPosts,
@@ -161,4 +198,5 @@ module.exports = {
   getPost,
   deletePost,
   editPost,
+  getPostsByUsername,
 };

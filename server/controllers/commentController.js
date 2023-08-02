@@ -1,12 +1,13 @@
 const User = require("../models/User");
 const Comment = require("../models/Comment");
 const Post = require("../models/Post");
+require("../models/associations");
 
 const addCommentToPost = async (req, res) => {
   try {
     console.log(req.body);
 
-    const post = await Post.findOne({ where: { id: req.body.PostId } });
+    const post = await Post.findOne({ where: { id: req.body.postId } });
 
     if (!post) {
       return res.status(404).json({ error: "Post not found" });
@@ -16,8 +17,8 @@ const addCommentToPost = async (req, res) => {
 
     const comment = await Comment.create({
       text: req.body.text,
-      UserId: req.user.id,
-      PostId: req.body.PostId,
+      userId: req.user.id,
+      postId: req.body.postId,
     });
 
     return res
@@ -39,7 +40,7 @@ const deleteComment = async (req, res) => {
       return res.status(404).json({ error: "Comment not found" });
     }
 
-    if (comment.UserId !== req.user.id) {
+    if (comment.userId !== req.user.id) {
       return res
         .status(403)
         .json({ error: "You are not authorized to delete this comment" });
@@ -54,12 +55,12 @@ const deleteComment = async (req, res) => {
   }
 };
 
-const getAllCommentByPostId = async (req, res) => {
+const getAllCommentBypostId = async (req, res) => {
   try {
-    const PostId = req.params.postId;
+    const postId = req.params.postId;
     const comments = await Comment.findAll({
       where: {
-        PostId,
+        postId,
       },
     });
     if (!comments) {
@@ -75,5 +76,5 @@ const getAllCommentByPostId = async (req, res) => {
 module.exports = {
   addCommentToPost,
   deleteComment,
-  getAllCommentByPostId,
+  getAllCommentBypostId,
 };

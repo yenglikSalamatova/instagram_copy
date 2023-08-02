@@ -1,5 +1,6 @@
 const Subscription = require("../models/Subscription");
 const User = require("../models/User");
+require("../models/associations");
 
 const followUser = async (req, res) => {
   try {

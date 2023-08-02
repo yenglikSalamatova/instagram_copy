@@ -3,6 +3,7 @@ const { Op } = require("sequelize");
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+require("../models/associations");
 
 const {
   VerificationCode,

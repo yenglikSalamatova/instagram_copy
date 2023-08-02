@@ -1,4 +1,5 @@
 const User = require("../models/User");
+require("../models/associations");
 
 const editMe = async (req, res) => {
   const { full_name, email, phone, username, bio } = req.body;

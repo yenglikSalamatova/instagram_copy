@@ -14,7 +14,7 @@ router.delete(
 router.get(
   "/:postId",
   authenticateToken,
-  commentController.getAllCommentByPostId
+  commentController.getAllCommentBypostId
 );
 
 module.exports = router;

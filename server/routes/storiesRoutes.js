@@ -20,6 +20,6 @@ router.delete(
   storiesController.deleteStories
 );
 
-router.get("/:userId", authenticateToken, storiesController.getStoryByUserId);
+router.get("/:userId", authenticateToken, storiesController.getStoryByuserId);
 
 module.exports = router;

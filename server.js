@@ -12,10 +12,6 @@ const storiesRoutes = require("./server/routes/storiesRoutes");
 const commentRoutes = require("./server/routes/commentRoutes");
 const subscriptionRoutes = require("./server/routes/subscriptionRoutes");
 
-// Подключаем файл с определениями ассоциаций
-const associations = require("./server/models/associations");
-associations(sequelize);
-
 // Parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

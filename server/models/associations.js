@@ -1,58 +1,61 @@
 // associations.js
-
 const User = require("./User");
+const Post = require("./Post");
+const Media = require("./Media");
 const Story = require("./Story");
 const Comment = require("./Comment");
-const Media = require("./Media");
-const Post = require("./Comment");
 const Subscription = require("./Subscription");
-const sequelize = require("../config/database");
 
-module.exports = (sequelize) => {
-  // Посты и юзер - юзер один - постов много
-  Post.belongsTo(User);
-  User.hasMany(Post);
+// Посты и юзер - юзер один - постов много
+User.hasMany(Post, {
+  foreignKey: "userId",
+  as: "posts",
+});
 
-  // Посты и медиа - пост один - медиа много
-  Post.hasMany(Media, { as: "media", foreignKey: "postId" });
-  Media.belongsTo(Post, { foreignKey: "postId" });
+Post.belongsTo(User, {
+  foreignKey: "userId",
+  as: "user",
+});
 
-  // Истории - юзер один - истории много
-  User.hasMany(Story, {
-    foreignKey: "UserId",
-    as: "stories",
-  });
-  Story.belongsTo(User, {
-    foreignKey: "UserId",
-    as: "user",
-  });
+// Посты и медиа - пост один - медиа много
+Post.hasMany(Media, { as: "media", foreignKey: "postId" });
+Media.belongsTo(Post, { foreignKey: "postId" });
 
-  // Комментарии и юзер - комментариев много - юзер один
-  Comment.belongsTo(User, {
-    foreignKey: "UserId",
-  });
-  User.hasMany(Comment, {
-    foreignKey: "UserId",
-  });
+// Истории - юзер один - истории много
+User.hasMany(Story, {
+  foreignKey: "userId",
+  as: "stories",
+});
+Story.belongsTo(User, {
+  foreignKey: "userId",
+  as: "user",
+});
 
-  // Комменатрии и пост - комментариев много - пост один
-  Comment.belongsTo(Post, {
-    foreignKey: "PostId",
-  });
-  Post.hasMany(Comment, {
-    foreignKey: "PostId",
-  });
+// Комментарии и юзер - комментариев много - юзер один
+Comment.belongsTo(User, {
+  foreignKey: "userId",
+});
+User.hasMany(Comment, {
+  foreignKey: "userId",
+});
 
-  //Подписчики и юзер - подписчиков много - юзеров много
-  User.belongsToMany(User, {
-    through: Subscription,
-    as: "following",
-    foreignKey: "followerId",
-  });
+// Комменатрии и пост - комментариев много - пост один
+Comment.belongsTo(Post, {
+  foreignKey: "postId",
+});
+Post.hasMany(Comment, {
+  foreignKey: "postId",
+});
 
-  User.belongsToMany(User, {
-    through: Subscription,
-    as: "followers",
-    foreignKey: "followingId",
-  });
-};
+//Подписчики и юзер - подписчиков много - юзеров много
+User.belongsToMany(User, {
+  through: Subscription,
+  as: "following",
+  foreignKey: "followerId",
+});
+
+User.belongsToMany(User, {
+  through: Subscription,
+  as: "followers",
+  foreignKey: "followingId",
+});
