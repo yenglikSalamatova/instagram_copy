@@ -38,4 +38,90 @@ const followUser = async (req, res) => {
   }
 };
 
-module.exports = { followUser };
+const getFollowersByUsername = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    // Находим пользователя по имени
+    const user = await User.findOne({
+      where: { username },
+      attributes: { exclude: ["password"] },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "Пользователь не найден" });
+    }
+
+    // Получаем подписчиков пользователя
+    const followers = await Subscription.findAll({
+      where: { followingId: user.id },
+      include: [
+        {
+          model: User,
+          as: "follower",
+          attributes: {
+            exclude: [
+              "password",
+              "isVerified",
+              "phone",
+              "email",
+              "createdAt",
+              "updatedAt",
+            ],
+          },
+        },
+      ],
+    });
+
+    res.status(200).json({ followers });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "Произошла ошибка при получении подписчиков" });
+  }
+};
+
+const getFollowingByUsername = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    // Находим пользователя по имени
+    const user = await User.findOne({
+      where: { username },
+      attributes: { exclude: ["password"] },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "Пользователь не найден" });
+    }
+
+    // Получаем пользователей, на которых подписан данный пользователь
+    const following = await Subscription.findAll({
+      where: { followerId: user.id },
+      include: [
+        {
+          model: User,
+          as: "following",
+          attributes: {
+            exclude: [
+              "password",
+              "isVerified",
+              "phone",
+              "email",
+              "createdAt",
+              "updatedAt",
+            ],
+          },
+        },
+      ],
+    });
+
+    res.status(200).json({ following });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Произошла ошибка при получении подписок" });
+  }
+};
+
+module.exports = { followUser, getFollowersByUsername, getFollowingByUsername };

@@ -35,4 +35,27 @@ const editMe = async (req, res) => {
   }
 };
 
-module.exports = { editMe };
+const getUserByUsername = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    // Находим пользователя по имени
+    const user = await User.findOne({
+      where: { username },
+      attributes: { exclude: ["password"] },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "Пользователь не найден" });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "Произошла ошибка при получении информации о пользователе",
+    });
+  }
+};
+
+module.exports = { editMe, getUserByUsername };
