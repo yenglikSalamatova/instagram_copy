@@ -11,6 +11,7 @@ const userRoutes = require("./server/routes/userRoutes");
 const storiesRoutes = require("./server/routes/storiesRoutes");
 const commentRoutes = require("./server/routes/commentRoutes");
 const subscriptionRoutes = require("./server/routes/subscriptionRoutes");
+const likeRoutes = require("./server/routes/likeRoutes");
 
 // Parsers
 app.use(express.json());
@@ -25,6 +26,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/stories", storiesRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
+app.use("/api/likes", likeRoutes);
 
 app.listen(3000, () => {
   console.log("Server is listening on port 3000");

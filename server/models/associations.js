@@ -5,6 +5,7 @@ const Media = require("./Media");
 const Story = require("./Story");
 const Comment = require("./Comment");
 const Subscription = require("./Subscription");
+const Like = require("./Like");
 
 User.hasMany(Post, {
   foreignKey: "userId",
@@ -17,6 +18,10 @@ User.hasMany(Story, {
 User.hasMany(Comment, {
   foreignKey: "userId",
 });
+
+User.hasMany(Like, { foreignKey: "userId" });
+Like.belongsTo(User, { foreignKey: "userId" });
+
 Subscription.belongsTo(User, { foreignKey: "followerId", as: "follower" });
 Subscription.belongsTo(User, { foreignKey: "followingId", as: "following" });
 Post.belongsTo(User, {
@@ -42,3 +47,12 @@ Comment.belongsTo(Post, {
 Post.hasMany(Comment, {
   foreignKey: "postId",
 });
+
+Post.hasMany(Like, { foreignKey: "postId" });
+Like.belongsTo(Post, { foreignKey: "postId" });
+
+Comment.hasMany(Like, { foreignKey: "commentId" });
+Like.belongsTo(Comment, { foreignKey: "commentId" });
+
+Story.hasMany(Like, { foreignKey: "storyId" });
+Like.belongsTo(Story, { foreignKey: "storyId" });
