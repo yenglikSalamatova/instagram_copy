@@ -19,7 +19,7 @@ module.exports = {
   production: {
     username: "doadmin",
     password: process.env.VPS_DATABASE_PASS,
-    database: "defaultdb",
+    database: "instagram_db",
     host: "db-postgresql-fra1-44132-do-user-14536331-0.b.db.ondigitalocean.com",
     dialect: "postgres",
     port: 25060,
