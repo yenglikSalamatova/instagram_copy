@@ -1,5 +1,8 @@
 const { Sequelize } = require("sequelize");
-const config = require("./config.json");
+const config = require("./config");
+
+const fs = require("fs");
+const path = require("path");
 
 const sequelize = new Sequelize(
   config[process.env.NODE_ENV].database,
@@ -8,6 +11,14 @@ const sequelize = new Sequelize(
   {
     host: config[process.env.NODE_ENV].host,
     dialect: config[process.env.NODE_ENV].dialect,
+    port: config[process.env.NODE_ENV].port,
+    dialectOptions: {
+      ssl: {
+        ca: fs.readFileSync(
+          path.resolve("server", "config", "ca-certificate.crt")
+        ),
+      },
+    },
   }
 );
 
