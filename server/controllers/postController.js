@@ -170,6 +170,23 @@ const getPost = async (req, res) => {
         {
           model: Comment,
           as: "comments",
+          include: [
+            {
+              model: User,
+              as: "user",
+              attributes: {
+                exclude: [
+                  "password",
+                  "phone",
+                  "birthday_date",
+                  "email",
+                  "createdAt",
+                  "updatedAt",
+                  "isVerified",
+                ],
+              },
+            },
+          ],
         },
         { model: Like, as: "likes" },
       ],
