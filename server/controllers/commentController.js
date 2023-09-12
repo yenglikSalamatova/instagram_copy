@@ -46,7 +46,7 @@ const deleteComment = async (req, res) => {
         .json({ error: "You are not authorized to delete this comment" });
     }
 
-    await comment.destroy();
+    await comment.destroy({ individualHooks: true });
 
     return res.status(200).json({ message: "Comment deleted successfully" });
   } catch (error) {
