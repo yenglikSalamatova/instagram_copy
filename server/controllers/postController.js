@@ -1,9 +1,13 @@
 const Post = require("../models/Post");
 const Media = require("../models/Media");
 const User = require("../models/User");
+const Comment = require("../models/Comment");
+const Like = require("../models/Like");
+const Subscription = require("../models/Subscription");
 require("../models/associations");
 const path = require("path");
 const fs = require("fs");
+const { Op } = require("sequelize");
 
 const createPost = async (req, res) => {
   try {
@@ -42,7 +46,24 @@ const getMyPosts = async (req, res) => {
       where: {
         userId: req.user.id,
       },
-      include: [{ model: Media, as: "media" }],
+      include: [
+        { model: Media, as: "media" },
+        {
+          model: User,
+          as: "user",
+          attributes: {
+            exclude: [
+              "password",
+              "phone",
+              "birthday_date",
+              "email",
+              "createdAt",
+              "updatedAt",
+              "isVerified",
+            ],
+          },
+        },
+      ],
     });
     res.status(201).json(posts);
   } catch (error) {
@@ -54,8 +75,68 @@ const getMyPosts = async (req, res) => {
 const getAllPosts = async (req, res) => {
   try {
     const posts = await Post.findAll({
-      include: [{ model: Media, as: "media" }],
+      include: [
+        { model: Media, as: "media" },
+        {
+          model: User,
+          as: "user",
+          attributes: {
+            exclude: [
+              "password",
+              "phone",
+              "birthday_date",
+              "email",
+              "createdAt",
+              "updatedAt",
+              "isVerified",
+            ],
+          },
+        },
+      ],
     });
+    res.status(201).json(posts);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Error when find all posts" });
+  }
+};
+
+const getAllFollowedPosts = async (req, res) => {
+  try {
+    const followings = await Subscription.findAll({
+      where: {
+        followerId: req.user.id,
+      },
+    });
+
+    const followingIds = followings.map((following) => following.followingId);
+
+    const posts = await Post.findAll({
+      where: {
+        userId: {
+          [Op.in]: followingIds,
+        },
+      },
+      include: [
+        { model: Media, as: "media" },
+        {
+          model: User,
+          as: "user",
+          attributes: {
+            exclude: [
+              "password",
+              "phone",
+              "birthday_date",
+              "email",
+              "createdAt",
+              "updatedAt",
+              "isVerified",
+            ],
+          },
+        },
+      ],
+    });
+
     res.status(201).json(posts);
   } catch (error) {
     console.log(error);
@@ -69,12 +150,34 @@ const getPost = async (req, res) => {
       where: {
         id: req.params.id,
       },
-      include: [{ model: Media, as: "media" }],
+      include: [
+        { model: Media, as: "media" },
+        {
+          model: User,
+          as: "user",
+          attributes: {
+            exclude: [
+              "password",
+              "phone",
+              "birthday_date",
+              "email",
+              "createdAt",
+              "updatedAt",
+              "isVerified",
+            ],
+          },
+        },
+        {
+          model: Comment,
+          as: "comments",
+        },
+        { model: Like, as: "likes" },
+      ],
     });
     res.status(201).json(posts);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "Error when find all posts" });
+    res.status(500).json({ error: "Error when find post by id" });
   }
 };
 
@@ -167,22 +270,39 @@ const getPostsByUsername = async (req, res) => {
   try {
     const { username } = req.params;
 
-    // Find the user with the given username
     const user = await User.findOne({ where: { username } });
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Find all posts created by the user
     const posts = await Post.findAll({
       where: { userId: user.id },
       include: [
+        { model: Media, as: "media" },
         {
-          model: Media,
-          as: "media",
+          model: User,
+          as: "user",
+          attributes: {
+            exclude: [
+              "password",
+              "phone",
+              "birthday_date",
+              "email",
+              "createdAt",
+              "updatedAt",
+              "isVerified",
+            ],
+          },
         },
+        { model: Comment, as: "comments" },
+        { model: Like, as: "likes" },
       ],
     });
+
+    for (let post of posts) {
+      post.setDataValue("commentCount", await post.countComments());
+      post.setDataValue("likeCount", await post.countLikes());
+    }
 
     res.status(200).json({ posts });
   } catch (error) {
@@ -199,4 +319,5 @@ module.exports = {
   deletePost,
   editPost,
   getPostsByUsername,
+  getAllFollowedPosts,
 };

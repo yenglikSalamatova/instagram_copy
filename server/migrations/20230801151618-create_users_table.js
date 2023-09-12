@@ -9,6 +9,10 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
       },
+      birthday_date: {
+        type: Sequelize.DATE,
+        allowNull: false,
+      },
       username: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -45,6 +49,16 @@ module.exports = {
       isVerified: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
+      },
+      followersCount: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      followingCount: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
       },
       createdAt: {
         type: Sequelize.DATE,

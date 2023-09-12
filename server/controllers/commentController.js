@@ -62,6 +62,22 @@ const getAllCommentBypostId = async (req, res) => {
       where: {
         postId,
       },
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: {
+            exclude: [
+              "password",
+              "isVerified",
+              "phone",
+              "email",
+              "createdAt",
+              "updatedAt",
+            ],
+          },
+        },
+      ],
     });
     if (!comments) {
       return res.status(404).json({ error: "Comments not found" });

@@ -6,6 +6,16 @@ const Post = sequelize.define("Post", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  likesCount: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+  },
+  commentsCount: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+  },
 });
 
 module.exports = Post;

@@ -15,7 +15,8 @@ const sendSms = require("../utils/sms");
 
 const register = async (req, res) => {
   try {
-    const { username, email, full_name, phone, password } = req.body;
+    const { username, email, full_name, phone, password, birthday_date } =
+      req.body;
     const identifier = email ? "email" : "phone";
 
     if (!identifier) {
@@ -38,11 +39,14 @@ const register = async (req, res) => {
       return res.status(400).json({ error: "User already exists." });
     }
 
+    const birthdayDateISO = new Date(birthday_date).toISOString();
+
     const user = await User.create({
       username,
       full_name,
       email,
       phone,
+      birthday_date: birthdayDateISO,
       password: await bcrypt.hash(password, 10),
       isVerified: false,
       profileId: null,

@@ -24,6 +24,8 @@ Like.belongsTo(User, { foreignKey: "userId" });
 
 Subscription.belongsTo(User, { foreignKey: "followerId", as: "follower" });
 Subscription.belongsTo(User, { foreignKey: "followingId", as: "following" });
+User.hasMany(Subscription, { foreignKey: "followerId", as: "followers" });
+User.hasMany(Subscription, { foreignKey: "followingId", as: "following" });
 Post.belongsTo(User, {
   foreignKey: "userId",
   as: "user",
@@ -39,16 +41,19 @@ Story.belongsTo(User, {
 
 Comment.belongsTo(User, {
   foreignKey: "userId",
+  as: "user",
 });
 
 Comment.belongsTo(Post, {
   foreignKey: "postId",
+  as: "post",
 });
 Post.hasMany(Comment, {
   foreignKey: "postId",
+  as: "comments",
 });
 
-Post.hasMany(Like, { foreignKey: "postId" });
+Post.hasMany(Like, { foreignKey: "postId", as: "likes" });
 Like.belongsTo(Post, { foreignKey: "postId" });
 
 Comment.hasMany(Like, { foreignKey: "commentId" });

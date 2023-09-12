@@ -22,4 +22,6 @@ router.delete(
 
 router.get("/:userId", authenticateToken, storiesController.getStoryByuserId);
 
+router.get("/", authenticateToken, storiesController.getAllFollowedStories);
+
 module.exports = router;

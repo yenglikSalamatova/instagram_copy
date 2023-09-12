@@ -17,4 +17,7 @@ router.get(
   subscriptionController.getFollowingByUsername
 );
 
+router.get("/", authenticateToken, subscriptionController.getSuggestedUsers);
+router.delete("/:userId", authenticateToken, subscriptionController.unfollow);
+
 module.exports = router;

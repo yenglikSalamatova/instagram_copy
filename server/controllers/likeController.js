@@ -36,6 +36,18 @@ const addLike = async (req, res) => {
       return res.status(404).json({ error: "Сущность не найдена" });
     }
 
+    // Проверим существование лайка пользователя с этой сущностью
+    const existingLike = await Like.findOne({
+      where: {
+        userId: user.id,
+        [`${entityType}Id`]: entityId,
+      },
+    });
+
+    if (existingLike) {
+      return res.status(400).json({ error: "Лайк уже существует" });
+    }
+
     // Создаем новый лайк
     const newLike = await Like.create({
       userId: user.id,
@@ -81,12 +93,25 @@ const removeLike = async (req, res) => {
       return res.status(404).json({ error: "Сущность не найдена" });
     }
 
+    // Проверим существование лайка пользователя с этой сущностью
+    const existingLike = await Like.findOne({
+      where: {
+        userId: user.id,
+        [`${entityType}Id`]: entityId,
+      },
+    });
+
+    if (!existingLike) {
+      return res.status(400).json({ error: "Лайк не существует" });
+    }
+
     // Удаляем лайк пользователя с этой сущностью
     await Like.destroy({
       where: {
         userId: user.id,
         [`${entityType}Id`]: entity.id,
       },
+      individualHooks: true,
     });
 
     res.status(200).json({ message: "Лайк успешно удален" });

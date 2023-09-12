@@ -1,4 +1,6 @@
 const Story = require("../models/Story");
+const User = require("../models/User");
+const Subscription = require("../models/Subscription");
 const path = require("path");
 const fs = require("fs");
 const { Op } = require("sequelize");
@@ -75,4 +77,49 @@ async function getStoryByuserId(req, res) {
   }
 }
 
-module.exports = { createStories, deleteStories, getStoryByuserId };
+const getAllFollowedStories = async (req, res) => {
+  try {
+    const followings = await Subscription.findAll({
+      where: {
+        followerId: req.user.id,
+      },
+    });
+
+    const followingIds = followings.map((following) => following.followedId);
+
+    const currentDate = new Date();
+    const stories = await Story.findAll({
+      where: {
+        expiresAt: {
+          [Op.gt]: currentDate, // Оператор ">" для сравнения с текущей датой
+        },
+        userId: {
+          [Op.in]: followingIds,
+        },
+      },
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: ["id", "username", "profilePicture"],
+        },
+      ],
+    });
+    if (!stories) {
+      return res.status(404).json({
+        message: "Истории не найдены",
+      });
+    }
+    res.status(200).json({ stories });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = {
+  createStories,
+  deleteStories,
+  getStoryByuserId,
+  getAllFollowedStories,
+};
