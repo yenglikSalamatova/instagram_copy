@@ -122,18 +122,27 @@ const login = async (req, res) => {
       return res.status(401).json({ error: "Invalid password" });
     }
     if (!user.isVerified) {
-      return res
-        .status(404)
-        .json({
-          error: "You're not verified. Please register your account again",
-        });
+      return res.status(404).json({
+        error: "You're not verified. Please register your account again",
+      });
     }
 
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      {
+        user: {
+          id: user.id,
+          username: user.username,
+          full_name: user.full_name,
+          birthday_date: user.birthday_date,
+        },
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "3d",
+      }
+    );
 
-    res.status(200).json({ token, user });
+    res.status(200).json({ token });
   } catch (error) {
     console.error("Error logging in:", error);
     res.status(500).json({ error: "Internal server error" });
