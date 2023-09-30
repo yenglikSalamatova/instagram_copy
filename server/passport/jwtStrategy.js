@@ -10,11 +10,8 @@ const jwtOptions = {
 
 const jwtStrategy = new JwtStrategy(jwtOptions, async (payload, done) => {
   try {
-    // Извлечение userId из payload
-    const { userId } = payload;
-
     // Поиск пользователя в базе данных по userId
-    const user = await User.findByPk(userId);
+    const user = await User.findByPk(payload.user.id);
 
     // Если пользователь найден, передаем его в коллбэк done
     if (user) {

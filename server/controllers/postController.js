@@ -113,9 +113,10 @@ const getAllFollowedPosts = async (req, res) => {
 
     const posts = await Post.findAll({
       where: {
-        userId: {
-          [Op.in]: followingIds,
-        },
+        [Op.or]: [
+          { userId: req.user.id },
+          { userId: { [Op.in]: followingIds } },
+        ],
       },
       include: [
         { model: Media, as: "media" },
