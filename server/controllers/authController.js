@@ -50,6 +50,7 @@ const register = async (req, res) => {
       password: await bcrypt.hash(password, 10),
       isVerified: false,
       profileId: null,
+      profilePicture: "/default_avatar.webp",
     });
 
     const code = await createVerificationCode(user.id);
