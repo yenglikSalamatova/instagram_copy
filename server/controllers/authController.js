@@ -49,7 +49,6 @@ const register = async (req, res) => {
       birthday_date: birthdayDateISO,
       password: await bcrypt.hash(password, 10),
       isVerified: false,
-      profileId: null,
       profilePicture: "/default_avatar.webp",
     });
 

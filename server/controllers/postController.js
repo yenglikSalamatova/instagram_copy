@@ -138,6 +138,8 @@ const getAllFollowedPosts = async (req, res) => {
       ],
     });
 
+    posts.sort((a, b) => b.createdAt - a.createdAt);
+
     res.status(201).json(posts);
   } catch (error) {
     console.log(error);
@@ -321,6 +323,8 @@ const getPostsByUsername = async (req, res) => {
       post.setDataValue("commentCount", await post.countComments());
       post.setDataValue("likeCount", await post.countLikes());
     }
+
+    posts.sort((a, b) => b.createdAt - a.createdAt);
 
     res.status(200).json({ posts });
   } catch (error) {

@@ -110,6 +110,7 @@ const getAllFollowedStories = async (req, res) => {
         message: "Истории не найдены",
       });
     }
+    stories.sort((a, b) => b.createdAt - a.createdAt);
     res.status(200).json({ stories });
   } catch (error) {
     console.log(error);
