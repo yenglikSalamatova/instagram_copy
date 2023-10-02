@@ -134,6 +134,7 @@ const login = async (req, res) => {
           username: user.username,
           full_name: user.full_name,
           birthday_date: user.birthday_date,
+          profilePicture: user.profilePicture,
         },
       },
       process.env.JWT_SECRET,
