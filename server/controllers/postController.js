@@ -258,7 +258,7 @@ const editPost = async (req, res) => {
         message: "Пост не найден или у вас нет прав на его редактирование",
       });
     }
-    if (req.files) {
+    if (req.files && req.files.length > 0) {
       // Удалить файлы медиа с диска
       post.media.forEach((media) => {
         const filePath = path.join(__dirname, "../../", "public", media.url);
