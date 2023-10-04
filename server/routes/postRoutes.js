@@ -13,7 +13,7 @@ router.delete("/:id", authenticateToken, postController.deletePost);
 router.patch("/:id", authenticateToken, mediaUpload, postController.editPost);
 router.get(
   "/byUsername/:username",
-  authenticateToken,
+
   postController.getPostsByUsername
 );
 router.get("/", authenticateToken, postController.getAllFollowedPosts);

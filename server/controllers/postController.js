@@ -299,8 +299,6 @@ const getPostsByUsername = async (req, res) => {
             ],
           },
         },
-        { model: Comment, as: "comments" },
-        { model: Like, as: "likes" },
       ],
     });
 
