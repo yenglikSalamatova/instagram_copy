@@ -155,6 +155,7 @@ const getPost = async (req, res) => {
       },
       include: [
         { model: Media, as: "media" },
+        { model: User, as: "user" },
         {
           model: Comment,
           as: "comments",
