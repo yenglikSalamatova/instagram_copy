@@ -42,7 +42,16 @@ const getUserByUsername = async (req, res) => {
     // Находим пользователя по имени
     const user = await User.findOne({
       where: { username },
-      attributes: { exclude: ["password"] },
+      attributes: {
+        exclude: [
+          "password",
+          "isVerified",
+          "phone",
+          "email",
+          "createdAt",
+          "updatedAt",
+        ],
+      },
     });
 
     if (!user) {

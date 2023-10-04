@@ -156,21 +156,6 @@ const getPost = async (req, res) => {
       include: [
         { model: Media, as: "media" },
         {
-          model: User,
-          as: "user",
-          attributes: {
-            exclude: [
-              "password",
-              "phone",
-              "birthday_date",
-              "email",
-              "createdAt",
-              "updatedAt",
-              "isVerified",
-            ],
-          },
-        },
-        {
           model: Comment,
           as: "comments",
           include: [

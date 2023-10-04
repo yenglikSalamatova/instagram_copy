@@ -7,5 +7,5 @@ const { avatarUpload } = require("../middleware/uploadMiddleware");
 const authenticateToken = passport.authenticate("jwt", { session: false });
 
 router.patch("/", authenticateToken, avatarUpload, userController.editMe);
-router.get("/:username", authenticateToken, userController.getUserByUsername);
+router.get("/:username", userController.getUserByUsername);
 module.exports = router;
