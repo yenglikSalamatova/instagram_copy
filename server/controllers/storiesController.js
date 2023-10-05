@@ -64,6 +64,13 @@ async function getStoryByuserId(req, res) {
           [Op.gt]: currentDate, // Оператор ">" для сравнения с текущей датой
         },
       },
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: ["id", "username", "profilePicture"],
+        },
+      ],
     });
     if (!stories) {
       return res.status(404).json({
