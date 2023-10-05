@@ -136,7 +136,7 @@ const getAllFollowedStories = async (req, res) => {
       return b.createdAt - a.createdAt;
     });
 
-    res.status(200).json({ storiesUsers: uniqueUsersArray });
+    res.status(200).send(uniqueUsersArray);
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: error.message });
