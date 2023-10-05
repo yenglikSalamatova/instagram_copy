@@ -15,6 +15,9 @@ const Subscription = sequelize.define("Subscription", {
 
 // Increment the followersCount and followingCount of the users involved
 Subscription.afterCreate(async (subscription) => {
+  if (subscription.followingId == subscription.followerId) {
+    return;
+  }
   await User.increment("followersCount", {
     by: 1,
     where: { id: subscription.followingId },
@@ -28,6 +31,9 @@ Subscription.afterCreate(async (subscription) => {
 
 // Decrement the followersCount and followingCount of the users involved
 Subscription.beforeDestroy(async (subscription) => {
+  if (subscription.followingId == subscription.followerId) {
+    return;
+  }
   await User.decrement("followersCount", {
     by: 1,
     where: { id: subscription.followingId },

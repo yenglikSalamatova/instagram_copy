@@ -100,10 +100,7 @@ const getAllFollowedStories = async (req, res) => {
         expiresAt: {
           [Op.gt]: currentDate, // Оператор ">" для сравнения с текущей датой
         },
-        [Op.or]: [
-          { userId: req.user.id },
-          { userId: { [Op.in]: followingIds } },
-        ],
+        userId: { [Op.in]: followingIds },
       },
       include: [
         {
