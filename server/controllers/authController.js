@@ -4,6 +4,7 @@ const path = require("path");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 require("../models/associations");
+const Subscription = require("../models/Subscription");
 
 const {
   VerificationCode,
