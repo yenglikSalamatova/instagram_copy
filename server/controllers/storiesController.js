@@ -110,7 +110,8 @@ const getAllFollowedStories = async (req, res) => {
         },
       ],
     });
-    if (!stories) {
+
+    if (stories.length === 0) {
       return res.status(404).json({
         message: "Истории не найдены",
       });
@@ -137,7 +138,7 @@ const getAllFollowedStories = async (req, res) => {
     uniqueUsersArray.sort((a, b) => {
       if (a.userId === req.user.id) return -1;
       if (b.userId === req.user.id) return 1;
-      return b.createdAt - a.createdAt;
+      return b.user.createdAt - a.user.createdAt;
     });
 
     res.status(200).send(uniqueUsersArray);
