@@ -112,13 +112,31 @@ const getAllFollowedStories = async (req, res) => {
       });
     }
 
-    stories.sort((a, b) => {
+    // Создаём объект для хранения уникальных данных пользователей
+    const uniqueUsers = {};
+
+    // Фильтруем и обрабатываем сторисы
+    stories.forEach((story) => {
+      const { userId, user } = story;
+      if (!uniqueUsers[userId]) {
+        // Если пользователя нет в уникальных данных, добавляем его
+        uniqueUsers[userId] = {
+          userId,
+          user: user.toJSON(), // Конвертируем объект пользователя в JSON
+        };
+      }
+    });
+
+    // Преобразуем объект обратно в массив уникальных пользователей
+    const uniqueUsersArray = Object.values(uniqueUsers);
+
+    uniqueUsersArray.sort((a, b) => {
       if (a.userId === req.user.id) return -1;
       if (b.userId === req.user.id) return 1;
       return b.createdAt - a.createdAt;
     });
 
-    res.status(200).json({ stories });
+    res.status(200).json({ storiesUsers: uniqueUsersArray });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: error.message });
