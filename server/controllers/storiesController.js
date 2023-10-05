@@ -93,9 +93,10 @@ const getAllFollowedStories = async (req, res) => {
         expiresAt: {
           [Op.gt]: currentDate, // Оператор ">" для сравнения с текущей датой
         },
-        userId: {
-          [Op.in]: followingIds,
-        },
+        [Op.or]: [
+          { userId: req.user.id },
+          { userId: { [Op.in]: followingIds } },
+        ],
       },
       include: [
         {
@@ -110,7 +111,13 @@ const getAllFollowedStories = async (req, res) => {
         message: "Истории не найдены",
       });
     }
-    stories.sort((a, b) => b.createdAt - a.createdAt);
+
+    stories.sort((a, b) => {
+      if (a.userId === req.user.id) return -1;
+      if (b.userId === req.user.id) return 1;
+      return b.createdAt - a.createdAt;
+    });
+
     res.status(200).json({ stories });
   } catch (error) {
     console.log(error);
