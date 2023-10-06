@@ -121,4 +121,21 @@ const removeLike = async (req, res) => {
   }
 };
 
-module.exports = { addLike, removeLike };
+const getLikes = async (req, res) => {
+  if (!req.user) {
+    return res.status(404).json({ error: "Пользователь не найден" });
+  }
+  try {
+    const likes = await Like.findAll({
+      where: {
+        userId: req.user.id,
+      },
+    });
+    res.status(200).send(likes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Произошла ошибка при получении лайков" });
+  }
+};
+
+module.exports = { addLike, removeLike, getLikes };
