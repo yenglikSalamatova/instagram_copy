@@ -53,12 +53,6 @@ const register = async (req, res) => {
       profilePicture: "/default_avatar.webp",
     });
 
-    // При регистрации подписаться на самого себя
-    const followerId = req.user.id;
-    const followingId = req.user.id;
-
-    await Subscription.create({ followerId, followingId });
-
     const code = await createVerificationCode(user.id);
 
     // Отправка кода через почту
