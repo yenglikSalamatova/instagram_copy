@@ -354,6 +354,37 @@ const getPostsByUsername = async (req, res) => {
   }
 };
 
+const getInterestingPosts = async (req, res) => {
+  try {
+    const posts = await Post.findAll({
+      where: { userId: { [Op.not]: req.user.id }, likesCount: { [Op.gt]: 0 } },
+      include: [
+        { model: Media, as: "media" },
+        {
+          model: User,
+          as: "user",
+          attributes: {
+            exclude: [
+              "password",
+              "phone",
+              "birthday_date",
+              "email",
+              "createdAt",
+              "updatedAt",
+              "isVerified",
+            ],
+          },
+        },
+      ],
+    });
+
+    res.status(200).json(posts);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Error when get interesting posts" });
+  }
+};
+
 module.exports = {
   createPost,
   getMyPosts,
@@ -363,4 +394,5 @@ module.exports = {
   editPost,
   getPostsByUsername,
   getAllFollowedPosts,
+  getInterestingPosts,
 };

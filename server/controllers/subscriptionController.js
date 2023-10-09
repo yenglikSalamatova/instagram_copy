@@ -132,16 +132,23 @@ const getSuggestedUsers = async (req, res) => {
       where: { followerId: req.user.id },
     });
 
+    const followingIds = userSubscriptions.map((sub) => sub.followingId);
+
     // Если пользователь ни на кого не подписан, то возвращаем 5 самых популярных пользователей
     if (userSubscriptions.length < 5) {
       const popularUsers = await User.findAll({
+        where: {
+          id: {
+            [Op.not]: req.user.id,
+            [Op.notIn]: followingIds,
+          },
+        },
         order: [["followersCount", "DESC"]],
         limit: 5,
       });
       return res.status(200).json({ users: popularUsers });
     }
 
-    const followingIds = userSubscriptions.map((sub) => sub.followingId);
     // console.log(followingIds);
 
     // Получаем 5 последних пользователей, на которых не подписан данный пользователь

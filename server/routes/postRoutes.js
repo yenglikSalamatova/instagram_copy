@@ -17,5 +17,10 @@ router.get(
   postController.getPostsByUsername
 );
 router.get("/", authenticateToken, postController.getAllFollowedPosts);
+router.get(
+  "/interesting",
+  authenticateToken,
+  postController.getInterestingPosts
+);
 
 module.exports = router;
