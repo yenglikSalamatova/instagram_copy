@@ -1,5 +1,6 @@
 const User = require("../models/User");
 require("../models/associations");
+const { Op } = require("sequelize");
 
 const editMe = async (req, res) => {
   const { full_name, email, phone, username, bio } = req.body;
@@ -69,21 +70,13 @@ const getUserByUsername = async (req, res) => {
 
 const searchUsers = async (req, res) => {
   try {
-    const { query } = req.params;
+    const { q } = req.query;
 
     const users = await User.findAll({
       where: {
         [Op.or]: [
-          {
-            full_name: {
-              [Op.like]: `%${query}%`,
-            },
-          },
-          {
-            username: {
-              [Op.like]: `%${query}%`,
-            },
-          },
+          { full_name: { [Op.like]: `%${query}%` } },
+          { username: { [Op.like]: `%${query}%` } },
         ],
       },
       attributes: {
@@ -101,9 +94,9 @@ const searchUsers = async (req, res) => {
     res.status(200).json(users);
   } catch (error) {
     console.error(error);
-    res.status(500).json({
-      error: "Произошла ошибка при поиске пользователей",
-    });
+    res
+      .status(500)
+      .json({ error: "An error occurred while searching for users" });
   }
 };
 
