@@ -6,6 +6,11 @@ const postController = require("../controllers/postController");
 const { mediaUpload } = require("../middleware/uploadMiddleware");
 
 router.post("/", authenticateToken, mediaUpload, postController.createPost);
+router.get(
+  "/interesting",
+  authenticateToken,
+  postController.getInterestingPosts
+);
 router.get("/all", authenticateToken, postController.getAllPosts);
 router.get("/my", authenticateToken, postController.getMyPosts);
 router.get("/:id", authenticateToken, postController.getPost);
@@ -17,10 +22,5 @@ router.get(
   postController.getPostsByUsername
 );
 router.get("/", authenticateToken, postController.getAllFollowedPosts);
-router.get(
-  "/interesting",
-  authenticateToken,
-  postController.getInterestingPosts
-);
 
 module.exports = router;
