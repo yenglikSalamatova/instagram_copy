@@ -13,14 +13,15 @@ router.get(
 );
 router.get("/all", authenticateToken, postController.getAllPosts);
 router.get("/my", authenticateToken, postController.getMyPosts);
-router.get("/:id", authenticateToken, postController.getPost);
-router.delete("/:id", authenticateToken, postController.deletePost);
-router.patch("/:id", authenticateToken, mediaUpload, postController.editPost);
 router.get(
   "/byUsername/:username",
 
   postController.getPostsByUsername
 );
+router.get("/:id", authenticateToken, postController.getPost);
+router.delete("/:id", authenticateToken, postController.deletePost);
+router.patch("/:id", authenticateToken, mediaUpload, postController.editPost);
+
 router.get("/", authenticateToken, postController.getAllFollowedPosts);
 
 module.exports = router;
