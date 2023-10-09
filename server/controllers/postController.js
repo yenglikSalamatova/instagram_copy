@@ -199,6 +199,14 @@ const deletePost = async (req, res) => {
           model: Media,
           as: "media",
         },
+        {
+          model: Like,
+          as: "likes",
+        },
+        {
+          model: Comment,
+          as: "comments",
+        },
       ],
     });
     if (!post) {
@@ -206,6 +214,20 @@ const deletePost = async (req, res) => {
         .status(404)
         .json({ message: "Пост не найден или у вас нет прав на его удаление" });
     }
+
+    // Удалить лайки
+    await Like.destroy({
+      where: {
+        postId: post.id,
+      },
+    });
+
+    await Comment.destroy({
+      where: {
+        postId: post.id,
+      },
+    });
+
     // Удалить файлы медиа с диска
     post.media.forEach((media) => {
       const filePath = path.join(__dirname, "../../", "public", media.url);
