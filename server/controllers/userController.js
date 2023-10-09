@@ -70,13 +70,13 @@ const getUserByUsername = async (req, res) => {
 
 const searchUsers = async (req, res) => {
   try {
-    const { q } = req.params;
+    const { q } = req.query;
 
     const users = await User.findAll({
       where: {
         [Op.or]: [
-          { full_name: { [Op.like]: `%${query}%` } },
-          { username: { [Op.like]: `%${query}%` } },
+          { full_name: { [Op.like]: `%${q}%` } },
+          { username: { [Op.like]: `%${q}%` } },
         ],
       },
       attributes: {
