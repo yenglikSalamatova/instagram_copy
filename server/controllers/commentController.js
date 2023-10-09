@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const Comment = require("../models/Comment");
 const Post = require("../models/Post");
+const Like = require("../models/Like");
 require("../models/associations");
 
 const addCommentToPost = async (req, res) => {

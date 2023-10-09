@@ -1,4 +1,5 @@
 const Story = require("../models/Story");
+const Like = require("../models/Like");
 const User = require("../models/User");
 const Subscription = require("../models/Subscription");
 const path = require("path");
