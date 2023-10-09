@@ -67,4 +67,44 @@ const getUserByUsername = async (req, res) => {
   }
 };
 
-module.exports = { editMe, getUserByUsername };
+const searchUsers = async (req, res) => {
+  try {
+    const { query } = req.params;
+
+    const users = await User.findAll({
+      where: {
+        [Op.or]: [
+          {
+            full_name: {
+              [Op.like]: `%${query}%`,
+            },
+          },
+          {
+            username: {
+              [Op.like]: `%${query}%`,
+            },
+          },
+        ],
+      },
+      attributes: {
+        exclude: [
+          "password",
+          "isVerified",
+          "phone",
+          "email",
+          "createdAt",
+          "updatedAt",
+        ],
+      },
+    });
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "Произошла ошибка при поиске пользователей",
+    });
+  }
+};
+
+module.exports = { editMe, getUserByUsername, searchUsers };
