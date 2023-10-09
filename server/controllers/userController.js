@@ -70,7 +70,7 @@ const getUserByUsername = async (req, res) => {
 
 const searchUsers = async (req, res) => {
   try {
-    const { q } = req.query;
+    const { q } = req.params;
 
     const users = await User.findAll({
       where: {
