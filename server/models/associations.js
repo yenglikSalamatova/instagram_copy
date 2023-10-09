@@ -56,8 +56,8 @@ Post.hasMany(Comment, {
 Post.hasMany(Like, { foreignKey: "postId", as: "likes" });
 Like.belongsTo(Post, { foreignKey: "postId" });
 
-Comment.hasMany(Like, { foreignKey: "commentId" });
+Comment.hasMany(Like, { foreignKey: "commentId", as: "likes" });
 Like.belongsTo(Comment, { foreignKey: "commentId" });
 
-Story.hasMany(Like, { foreignKey: "storyId" });
+Story.hasMany(Like, { foreignKey: "storyId", as: "likes" });
 Like.belongsTo(Story, { foreignKey: "storyId" });

@@ -34,7 +34,14 @@ const deleteComment = async (req, res) => {
   try {
     const { commentId } = req.params;
 
-    const comment = await Comment.findByPk(commentId);
+    const comment = await Comment.findByPk(commentId, {
+      include: [
+        {
+          model: Like, // Модель лайков к комментарию
+          as: "likes",
+        },
+      ],
+    });
 
     if (!comment) {
       return res.status(404).json({ error: "Comment not found" });
@@ -45,6 +52,13 @@ const deleteComment = async (req, res) => {
         .status(403)
         .json({ error: "You are not authorized to delete this comment" });
     }
+
+    // Удаление лайков, связанных с комментарием
+    await Like.destroy({
+      where: {
+        commentId: comment.id,
+      },
+    });
 
     await comment.destroy({ individualHooks: true });
 

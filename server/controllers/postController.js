@@ -206,6 +206,12 @@ const deletePost = async (req, res) => {
         {
           model: Comment,
           as: "comments",
+          include: [
+            {
+              model: Like,
+              as: "likes",
+            },
+          ],
         },
       ],
     });
@@ -214,6 +220,15 @@ const deletePost = async (req, res) => {
         .status(404)
         .json({ message: "Пост не найден или у вас нет прав на его удаление" });
     }
+
+    // Удалить лайки у комментариев
+    post.comments.forEach(async (comment) => {
+      await Like.destroy({
+        where: {
+          commentId: comment.id,
+        },
+      });
+    });
 
     // Удалить лайки
     await Like.destroy({

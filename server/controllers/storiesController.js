@@ -36,12 +36,25 @@ async function deleteStories(req, res) {
         id: req.params.id,
         userId: req.user.id,
       },
+      include: [
+        {
+          model: Like,
+          as: "likes",
+        },
+      ],
     });
     if (!story) {
       return res.status(404).json({
         message: "История не найдена или у вас нет прав на его удаление",
       });
     }
+
+    await Like.destroy({
+      where: {
+        storyId: story.id,
+      },
+    });
+
     const filePath = path.join(__dirname, "../../", "public", story.content);
     fs.unlink(filePath, (err) => {
       if (err) console.error(err);
