@@ -5,3 +5,6 @@ node_modules/
 *.env
 
 public/uploads
+
+*.key
+*.crt
