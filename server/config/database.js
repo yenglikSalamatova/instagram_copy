@@ -12,13 +12,6 @@ const sequelize = new Sequelize(
     host: config[process.env.NODE_ENV].host,
     dialect: config[process.env.NODE_ENV].dialect,
     port: config[process.env.NODE_ENV].port,
-    dialectOptions: {
-      ssl: {
-        ca: fs.readFileSync(
-          path.resolve("server", "config", "ca-certificate.crt")
-        ),
-      },
-    },
   }
 );
 

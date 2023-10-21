@@ -143,7 +143,7 @@ const getAllFollowedStories = async (req, res) => {
         // Если пользователя нет в уникальных данных, добавляем его
         uniqueUsers[userId] = {
           userId,
-          user: user.toJSON(), // Конвертируем объект пользователя в JSON
+          user: user.toJSON(),
         };
       }
     });
