@@ -3,20 +3,20 @@ const router = express.Router();
 const passport = require("passport");
 
 const storiesController = require("../controllers/storiesController");
-const { storyUpload } = require("../middleware/uploadMiddleware");
+const { tempUpload } = require("../middleware/uploadMiddleware");
 const authenticateToken = passport.authenticate("jwt", { session: false });
 
 router.post(
   "/",
   authenticateToken,
-  storyUpload,
+  tempUpload,
   storiesController.createStories
 );
 
 router.delete(
   "/:id",
   authenticateToken,
-  storyUpload,
+  tempUpload,
   storiesController.deleteStories
 );
 

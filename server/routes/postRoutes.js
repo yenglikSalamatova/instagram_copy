@@ -3,9 +3,9 @@ const passport = require("passport");
 const authenticateToken = passport.authenticate("jwt", { session: false });
 const router = express.Router();
 const postController = require("../controllers/postController");
-const { mediaUpload } = require("../middleware/uploadMiddleware");
+const { tempUpload } = require("../middleware/uploadMiddleware");
 
-router.post("/", authenticateToken, mediaUpload, postController.createPost);
+router.post("/", authenticateToken, tempUpload, postController.createPost);
 router.get(
   "/interesting",
   authenticateToken,
@@ -21,7 +21,7 @@ router.get(
 router.get("/saved", authenticateToken, postController.getAllSavedPosts);
 router.get("/:id", authenticateToken, postController.getPost);
 router.delete("/:id", authenticateToken, postController.deletePost);
-router.patch("/:id", authenticateToken, mediaUpload, postController.editPost);
+router.patch("/:id", authenticateToken, postController.editPost);
 
 router.get("/", authenticateToken, postController.getAllFollowedPosts);
 

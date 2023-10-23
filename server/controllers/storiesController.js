@@ -6,11 +6,33 @@ const path = require("path");
 const fs = require("fs");
 const { Op } = require("sequelize");
 require("../models/associations");
+const sharp = require("sharp");
 
 async function createStories(req, res) {
   try {
     const { title } = req.body;
-    const content = `/uploads/${req.user.id}/media/${req.file.filename}`;
+
+    const compressedMedia = await sharp(req.file.buffer)
+      .resize(500, 500)
+      .toBuffer();
+    const uniqueFileName = `${Date.now()}_${req.file.originalname}`;
+
+    const mediaDirectoryPath = path.join(
+      __dirname,
+      "../../public/uploads",
+      `${req.user.id}`,
+      "media"
+    );
+
+    // Создать директорию если такой нет
+    if (!fs.existsSync(mediaDirectoryPath)) {
+      fs.mkdirSync(mediaDirectoryPath, { recursive: true });
+    }
+    const filePath = path.join(mediaDirectoryPath, uniqueFileName);
+    fs.writeFileSync(filePath, compressedMedia);
+
+    const content = `/uploads/${req.user.id}/media/${uniqueFileName}`;
+
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 24);
     console.log(expiresAt);

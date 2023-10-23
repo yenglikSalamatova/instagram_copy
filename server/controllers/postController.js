@@ -9,6 +9,7 @@ const path = require("path");
 const fs = require("fs");
 const { Op } = require("sequelize");
 const SavedPost = require("../models/SavedPost");
+const sharp = require("sharp");
 
 const createPost = async (req, res) => {
   try {
@@ -18,20 +19,40 @@ const createPost = async (req, res) => {
       userId: req.user.id,
     });
 
-    if (req.files.length === 0) {
+    if (req.file.length === 0) {
       res.status(500).json({ error: "No files to upload" });
     }
 
-    // Создаем связанные медиа-файлы
-    const mediaPromises = req.files.map(async (file) => {
-      return Media.create({
-        url: `/uploads/${req.user.id}/media/${file.filename}`,
-        type: file.mimetype.startsWith("image/") ? "photo" : "video",
-        postId: newPost.id,
-      });
+    console.log(req.file);
+
+    const compressedMedia = await sharp(req.file.buffer)
+      .resize(800, 800)
+      .toBuffer();
+
+    const uniqueFileName = `${Date.now()}_${req.file.originalname}`;
+
+    const mediaDirectoryPath = path.join(
+      __dirname,
+      "../../public/uploads",
+      `${req.user.id}`,
+      "media"
+    );
+
+    // Создать директорию если такой нет
+    if (!fs.existsSync(mediaDirectoryPath)) {
+      fs.mkdirSync(mediaDirectoryPath, { recursive: true });
+    }
+
+    const filePath = path.join(mediaDirectoryPath, uniqueFileName);
+
+    fs.writeFileSync(filePath, compressedMedia);
+
+    const media = await Media.create({
+      url: `/uploads/${req.user.id}/media/${uniqueFileName}`,
+      postId: newPost.id,
+      type: "photo",
     });
 
-    const media = await Promise.all(mediaPromises);
     newPost.media = media;
 
     res.status(201).json(newPost);
@@ -282,25 +303,7 @@ const editPost = async (req, res) => {
         message: "Пост не найден или у вас нет прав на его редактирование",
       });
     }
-    if (req.files && req.files.length > 0) {
-      // Удалить файлы медиа с диска
-      post.media.forEach((media) => {
-        const filePath = path.join(__dirname, "../../", "public", media.url);
-        fs.unlink(filePath, (err) => {
-          if (err) console.error(err);
-        });
-      });
-
-      // Создаем новые  медиа-файлы
-      const mediaPromises = req.files.map(async (file) => {
-        return Media.create({
-          url: `/uploads/${req.user.id}/media/${file.filename}`,
-          type: file.mimetype.startsWith("image/") ? "photo" : "video",
-          postId: post.id,
-        });
-      });
-      await Promise.all(mediaPromises);
-    }
+    // Загруженное фото нельзя заменить при редактировании поста!
     post.caption = caption;
     await post.save();
     res.status(201).json(post);

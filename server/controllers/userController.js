@@ -1,13 +1,36 @@
 const User = require("../models/User");
 require("../models/associations");
 const { Op } = require("sequelize");
+const sharp = require("sharp");
+const path = require("path");
+const fs = require("fs");
 
 const editMe = async (req, res) => {
   const { full_name, email, phone, username, bio } = req.body;
   let profilePicture;
 
+  console.log(req.file);
   if (req.file) {
-    profilePicture = `/uploads/${req.user.id}/avatars/${req.file?.filename}`;
+    const compressedMedia = await sharp(req.file.buffer)
+      .resize(500, 500)
+      .toBuffer();
+    const uniqueFileName = `${Date.now()}_${req.file.originalname}`;
+
+    const mediaDirectoryPath = path.join(
+      __dirname,
+      "../../public/uploads",
+      `${req.user.id}`,
+      "avatars"
+    );
+
+    // Создать директорию если такой нет
+    if (!fs.existsSync(mediaDirectoryPath)) {
+      fs.mkdirSync(mediaDirectoryPath, { recursive: true });
+    }
+    const filePath = path.join(mediaDirectoryPath, uniqueFileName);
+    fs.writeFileSync(filePath, compressedMedia);
+
+    profilePicture = `/uploads/${req.user.id}/avatars/${uniqueFileName}`;
   }
 
   try {
