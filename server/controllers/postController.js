@@ -8,6 +8,7 @@ require("../models/associations");
 const path = require("path");
 const fs = require("fs");
 const { Op } = require("sequelize");
+const SavedPost = require("../models/SavedPost");
 
 const createPost = async (req, res) => {
   try {
@@ -385,6 +386,84 @@ const getInterestingPosts = async (req, res) => {
   }
 };
 
+const savePost = async (req, res) => {
+  try {
+    console.log("req.user:", req.user);
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    const { postId } = req.params;
+    const post = await Post.findOne({ where: { id: postId } });
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+    const newSavedPost = await SavedPost.create({
+      userId: req.user.id * 1,
+      postId,
+    });
+    res.status(200).json({ message: "Post saved successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Error when saving post" });
+  }
+};
+
+const deleteSavedPost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const savedPost = await SavedPost.findOne({
+      where: { userId: req.user.id, postId },
+    });
+    if (!savedPost) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+    await savedPost.destroy();
+    res.status(200).json({ message: "Post deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Error when deleting post" });
+  }
+};
+
+const getAllSavedPosts = async (req, res) => {
+  try {
+    const savedPosts = await SavedPost.findAll({
+      where: { userId: req.user.id },
+      include: [
+        {
+          model: Post,
+          as: "post",
+          include: [
+            {
+              model: Media,
+              as: "media",
+            },
+            {
+              model: User,
+              as: "user",
+              attributes: {
+                exclude: [
+                  "password",
+                  "phone",
+                  "birthday_date",
+                  "email",
+                  "createdAt",
+                  "updatedAt",
+                  "isVerified",
+                ],
+              },
+            },
+          ],
+        },
+      ],
+    });
+    res.status(200).json(savedPosts);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Error when get all saved posts" });
+  }
+};
+
 module.exports = {
   createPost,
   getMyPosts,
@@ -395,4 +474,7 @@ module.exports = {
   getPostsByUsername,
   getAllFollowedPosts,
   getInterestingPosts,
+  getAllSavedPosts,
+  savePost,
+  deleteSavedPost,
 };

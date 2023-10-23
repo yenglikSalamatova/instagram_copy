@@ -6,6 +6,7 @@ const Story = require("./Story");
 const Comment = require("./Comment");
 const Subscription = require("./Subscription");
 const Like = require("./Like");
+const SavedPost = require("./SavedPost");
 
 User.hasMany(Post, {
   foreignKey: "userId",
@@ -61,3 +62,6 @@ Like.belongsTo(Comment, { foreignKey: "commentId" });
 
 Story.hasMany(Like, { foreignKey: "storyId", as: "likes" });
 Like.belongsTo(Story, { foreignKey: "storyId" });
+
+SavedPost.belongsTo(User, { foreignKey: "userId", as: "user" });
+SavedPost.belongsTo(Post, { foreignKey: "postId", as: "post" });

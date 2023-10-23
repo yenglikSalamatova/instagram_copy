@@ -224,17 +224,13 @@ const resendVerificationCode = async (req, res) => {
       where: { userId: user.id },
     });
 
-    if (!verificationCode) {
-      return res.status(404).json({ error: "Verification code not found" });
-    }
-
     if (user.isVerified) {
       return res.status(400).json({ error: "Account is already verified" });
     }
 
-    if (new Date(verificationCode.expiresIn) >= new Date()) {
-      return res.status(400).json({
-        error: "Verification code is still valid, please try again later",
+    if (verificationCode) {
+      await VerificationCode.destroy({
+        where: { userId: user.id },
       });
     }
 
