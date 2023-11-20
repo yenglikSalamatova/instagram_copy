@@ -283,6 +283,7 @@ const deletePost = async (req, res) => {
 
 const editPost = async (req, res) => {
   const { caption } = req.body;
+  console.log(caption);
 
   try {
     const post = await Post.findOne({
@@ -300,12 +301,13 @@ const editPost = async (req, res) => {
 
     if (!post) {
       return res.status(404).json({
-        message: "Пост не найден или у вас нет прав на его редактирование",
+        message: "Post not found or you don't have permission to edit it",
       });
     }
-    // Загруженное фото нельзя заменить при редактировании поста!
+
     post.caption = caption;
     await post.save();
+
     res.status(201).json(post);
   } catch (error) {
     console.log(error);
