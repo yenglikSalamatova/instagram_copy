@@ -1,7 +1,7 @@
 const path = require("path");
 
 module.exports = {
-  config: path.resolve("server/config", "config.json"), // Путь к файлу конфигурации Sequelize
+  config: path.resolve("server/config", "config.js"), // Путь к файлу конфигурации Sequelize
   "models-path": path.resolve("server", "models"), // Путь к папке с вашими моделями
   "migrations-path": path.resolve("server", "migrations"), // Путь к папке с вашими миграциями
   "seeders-path": path.resolve("server", "seeders"), // Путь к папке с вашими сидерами (если используете)

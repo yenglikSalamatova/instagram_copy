@@ -4,16 +4,16 @@ const config = require("./config");
 const fs = require("fs");
 const path = require("path");
 
-const sequelize = new Sequelize(
-  config[process.env.NODE_ENV].database,
-  config[process.env.NODE_ENV].username,
-  config[process.env.NODE_ENV].password,
-  {
-    host: config[process.env.NODE_ENV].host,
-    dialect: config[process.env.NODE_ENV].dialect,
-    port: config[process.env.NODE_ENV].port,
-  }
-);
+const sequelize = new Sequelize({
+  ...config.development,
+  dialect: "postgres",
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  },
+});
 
 // Обработчик успешного подключения
 sequelize
@@ -29,12 +29,18 @@ sequelize
 
 // Обработчик ошибки подключения
 sequelize
-  .sync() // Это может помочь обнаружить ошибку подключения к базе данных при выполнении первичной синхронизации моделей.
+  .sync()
   .then(() => {
     console.log("Models synced successfully.");
   })
   .catch((error) => {
     console.error("Error syncing models:", error);
   });
+
+process.on("beforeExit", async () => {
+  console.log("Closing database connection...");
+  await sequelize.close();
+  console.log("Database connection closed.");
+});
 
 module.exports = sequelize;

@@ -4,12 +4,16 @@ require("dotenv").config({ path: path.resolve(__dirname, "../../.env") });
 
 module.exports = {
   development: {
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-    dialect: "postgres",
+    username: process.env.PGUSER,
+    password: process.env.PGPASSWORD,
+    database: process.env.PGDATABASE,
+    host: process.env.PGHOST,
     port: 5432,
+    dialect: "postgres",
+    ssl: "require",
+    connection: {
+      options: `project=${process.env.ENDPOINT_ID}`,
+    },
   },
   test: {
     username: "admin",
@@ -19,11 +23,15 @@ module.exports = {
     dialect: "postgres",
   },
   production: {
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-    dialect: "postgres",
+    username: process.env.PGUSER,
+    password: process.env.PGPASSWORD,
+    database: process.env.PGDATABASE,
+    host: process.env.PGHOST,
     port: 5432,
+    dialect: "postgres",
+    ssl: "require",
+    connection: {
+      options: `project=${process.env.ENDPOINT_ID}`,
+    },
   },
 };
