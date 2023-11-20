@@ -31,6 +31,7 @@ app.use("/api/comments", commentRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/likes", likeRoutes);
 
-app.listen(3000, () => {
-  console.log("Server is listening on port 3000 with SSL certificate");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
